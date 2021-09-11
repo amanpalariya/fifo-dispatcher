@@ -38,7 +38,7 @@ void init_queue(struct request_queue* queue, int max_size);
 
 struct request_queue* get_new_empty_queue(int max_size);
 
-bool enqueue(struct request_queue* queue, struct request new_req);
+bool enqueue(struct request_queue* queue, struct request* req);
 
 struct request* dequeue(struct request_queue* queue);
 

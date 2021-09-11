@@ -66,8 +66,7 @@ struct request_queue* get_new_empty_queue(int max_size) {
     return queue;
 }
 
-bool enqueue(struct request_queue* queue, struct request new_req) {
-    struct request* req = get_new_request(new_req.dll_name, new_req.func_name, new_req.func_args);
+bool enqueue(struct request_queue* queue, struct request* req) {
     struct request_queue_node* node = get_new_request_queue_node(req, NULL, queue->head);
     if (is_queue_empty(queue)) {
         queue->head = node;
