@@ -56,3 +56,7 @@ dkms.conf
 .vscode/*
 .vim
 .vim/*
+
+# Builds
+build
+build/*
