@@ -6,6 +6,7 @@
 #define LOG_LEVEL_WARNING (2)
 #define LOG_LEVEL_ERROR (3)
 
+#include <stdarg.h>
 #include <stdio.h>
 
 extern int __log_level__;
@@ -20,14 +21,14 @@ void mute_logs();
 
 void unmute_logs();
 
-void console_log(char* msg, int level);
+void console_log(int log_level, const char* fmt, va_list args);
 
-void log_debug(char* msg);
+void log_debug(const char* fmt, ...);
 
-void log_info(char* msg);
+void log_info(const char* fmt, ...);
 
-void log_warning(char* msg);
+void log_warning(const char* fmt, ...);
 
-void log_error(char* msg);
+void log_error(const char* fmt, ...);
 
 #endif

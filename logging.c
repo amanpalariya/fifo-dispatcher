@@ -1,6 +1,8 @@
 #include "logging.h"
 
+#include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -25,36 +27,74 @@ void unmute_logs() {
     __log_level__ = __log_level_backup__;
 }
 
-void console_log(char* msg, int level) {
-    if (!__log_stream__) set_log_stream(stdout);
-    if (level < __log_level__) return;
+char* get_current_time_string() {
     time_t rawtime;
     time(&rawtime);
     struct tm* t = localtime(&rawtime);
-    char timeStr[9];
-    sprintf(timeStr, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec);
-    switch (level) {
+    char* timestr = (char*)malloc(8 + 1);
+    sprintf(timestr, "%02d:%02d:%02d", t->tm_hour, t->tm_min, t->tm_sec);
+    return timestr;
+}
+
+char* get_prefixed_format(int log_level, const char* fmt) {
+    char* timestr = get_current_time_string();
+    const int MAX_PREFIX_SIZE = 20;
+    char prefix[MAX_PREFIX_SIZE];
+    switch (log_level) {
         case LOG_LEVEL_INFO:
-            fprintf(__log_stream__, "INFO  %s: %s\n", timeStr, msg);
+            sprintf(prefix, "INFO  %s:", timestr);
             break;
         case LOG_LEVEL_WARNING:
-            fprintf(__log_stream__, "WARN  %s: %s\n", timeStr, msg);
+            sprintf(prefix, "WARN  %s:", timestr);
             break;
         case LOG_LEVEL_DEBUG:
-            fprintf(__log_stream__, "DEBUG %s: %s\n", timeStr, msg);
+            sprintf(prefix, "DEBUG %s:", timestr);
             break;
         case LOG_LEVEL_ERROR:
-            fprintf(__log_stream__, "ERROR %s: %s\n", timeStr, msg);
+            sprintf(prefix, "ERROR %s:", timestr);
             break;
         default:
             break;
     }
+    free(timestr);
+    char* new_fmt;
+    new_fmt = (char*)malloc(strlen(fmt) + MAX_PREFIX_SIZE + 2);
+    sprintf(new_fmt, "%s %s\n", prefix, fmt);
+    return new_fmt;
 }
 
-void log_debug(char* msg) { console_log(msg, LOG_LEVEL_DEBUG); }
+void console_log(int log_level, const char* fmt, va_list args) {
+    if (!__log_stream__) set_log_stream(stdout);
+    if (log_level < __log_level__) return;
+    char* new_fmt = get_prefixed_format(log_level, fmt);
+    vfprintf(__log_stream__, new_fmt, args);
+    free(new_fmt);
+}
 
-void log_info(char* msg) { console_log(msg, LOG_LEVEL_INFO); }
+void log_debug(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    console_log(LOG_LEVEL_DEBUG, fmt, args);
+    va_end(args);
+}
 
-void log_warning(char* msg) { console_log(msg, LOG_LEVEL_WARNING); }
+void log_info(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    console_log(LOG_LEVEL_INFO, fmt, args);
+    va_end(args);
+}
 
-void log_error(char* msg) { console_log(msg, LOG_LEVEL_ERROR); }
+void log_warning(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    console_log(LOG_LEVEL_WARNING, fmt, args);
+    va_end(args);
+}
+
+void log_error(const char* fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    console_log(LOG_LEVEL_ERROR, fmt, args);
+    va_end(args);
+}
