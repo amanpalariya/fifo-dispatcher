@@ -3,6 +3,6 @@
 
 #include "ds.h"
 
-void sendRequest(int port_number, struct request* req);
+void send_request(int port_number, struct request* req);
 
 #endif
