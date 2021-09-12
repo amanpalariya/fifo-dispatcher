@@ -5,7 +5,7 @@
 --output-filename = main.out
 --output-filepath = ${--build-dir}/${--output-filename}
 
-main: main.c ${--dependencies}
+main: ${--main-file} ${--dependencies}
 	@echo "Compiling..."
 	@mkdir -p ${--build-dir}
 	@gcc ${--main-file} ${--dependencies}  ${--libraries} -o ${--output-filepath}
