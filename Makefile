@@ -1,4 +1,4 @@
---dependencies = client.c dispatcher.c dll_runner.c ds.c server.c logging.c
+--dependencies = client.c dispatcher.c dll_runner.c ds.c server.c logger.c
 --libraries = -lpthread -ldl
 --build-dir = build
 --main-file = main.c

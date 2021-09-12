@@ -1,5 +1,5 @@
-#ifndef CS303_LOGGING_H
-#define CS303_LOGGING_H
+#ifndef CS303_LOGGER_H
+#define CS303_LOGGER_H
 
 #define LOG_LEVEL_DEBUG (0)
 #define LOG_LEVEL_INFO (1)
