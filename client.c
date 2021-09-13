@@ -11,12 +11,7 @@
 
 #include "ds.h"
 #include "logger.h"
-
-void send_request_through_stream(FILE* stream, struct request* req) {
-}
-
-bool has_server_received_request(FILE* stream) {
-}
+#include "protocol.h"
 
 int connect_to_port_number(int port_number) {
     int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -36,17 +31,36 @@ int connect_to_port_number(int port_number) {
 }
 
 void send_request(int port_number, struct request* req) {
-    int socket_fd = connect_to_port_number(port_number);
-    if (socket_fd < 0) {
-        // TODO: Error
+    if (req == NULL) {
+        log_error("NULL request, aborting");
         return;
     }
-    FILE* socket_stream = fdopen(socket_fd, "w+");
-    send_request_through_stream(socket_stream, req);
+    int socket_fd = connect_to_port_number(port_number);
+    if (socket_fd < 0) {
+        log_error("Could not connect to the server at port %4d", port_number);
+        return;
+    }
+    FILE* socket_stream = fdopen(socket_fd, "w");
+    log_info("Sending request to server");
+    write_request_to_stream(socket_stream, req);
+    log_info("Request sent");
     socket_stream = fdopen(socket_fd, "r");
-    if (has_server_received_request(socket_stream)) {
-        // TODO: Print acknowledgement receipt
-    } else {
-        // TODO: Print denial receipt
+    int acknowledgement = read_acknowledgement_from_stream(socket_stream);
+    switch (acknowledgement) {
+        case REQUEST_RECEIVE_ACKNOWLEDGEMENT_SUCCESS:
+            log_info("Request queued by the server");
+            break;
+        case REQUEST_RECEIVE_ACKNOWLEDGEMENT_FAILURE_QUEUE_FULL:
+            log_warning("Request could not be queued because the queue was full");
+            break;
+        case REQUEST_RECEIVE_ACKNOWLEDGEMENT_FAILURE_MALFORMED_REQUEST:
+            log_warning("Malformed request received by the server");
+            break;
+        case REQUEST_RECEIVE_ACKNOWLEDGEMENT_FAILURE_UNKNOWN:
+            log_warning("Unknown error while processing request at the server");
+            break;
+        default:
+            log_error("Invalid acknowledgement received from the server");
+            break;
     }
 }
