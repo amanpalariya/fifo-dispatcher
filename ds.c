@@ -4,9 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void init_request(struct request* req, char* dll_name, char* func_name, char** func_args) {
+void init_request(struct request* req, char* dll_name, char* func_name, int num_args, char** func_args) {
     req->dll_name = dll_name;
     req->func_name = func_name;
+    req->num_args = num_args;
     req->func_args = func_args;
 }
 
@@ -14,9 +15,9 @@ struct request* get_new_empty_request() {
     return (struct request*)malloc(sizeof(struct request));
 }
 
-struct request* get_new_request(char* dll_name, char* func_name, char** func_args) {
+struct request* get_new_request(char* dll_name, char* func_name, int num_args, char** func_args) {
     struct request* req = get_new_empty_request();
-    init_request(req, dll_name, func_name, func_args);
+    init_request(req, dll_name, func_name, num_args, func_args);
     return req;
 }
 
@@ -136,9 +137,15 @@ void print_queue(struct request_queue* q) {
 }
 
 void print_request(struct request* req) {
-    if (req) {
-        printf("%s\n", req->dll_name);
-    } else {
-        printf("NULL\n");
+    printf("{\n");
+    printf("\tdll_name: \"%s\",\n", req->dll_name);
+    printf("\tfunc_name: \"%s\",\n", req->func_name);
+    printf("\tfunc_args: ");
+    printf("[");
+    if (req->num_args > 0) printf("\"%s\"", req->func_args[0]);
+    for (int i = 1; i < req->num_args; i++) {
+        printf(" , \"%s\"", req->func_args[i]);
     }
+    printf("]\n");
+    printf("}\n");
 }

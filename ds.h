@@ -6,6 +6,7 @@
 struct request {
     char* dll_name;
     char* func_name;
+    int num_args;
     char** func_args;
 };
 
@@ -22,11 +23,11 @@ struct request_queue {
     struct request_queue_node* tail;
 };
 
-void init_request(struct request* req, char* dll_name, char* func_name, char** func_args);
+void init_request(struct request* req, char* dll_name, char* func_name, int num_args, char** func_args);
 
 struct request* get_new_empty_request();
 
-struct request* get_new_request(char* dll_name, char* func_name, char** func_args);
+struct request* get_new_request(char* dll_name, char* func_name, int num_args, char** func_args);
 
 void free_request(struct request* req);
 
