@@ -1,5 +1,6 @@
 #include "ds.h"
 
+#include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,6 +63,8 @@ void init_queue(struct request_queue* queue, int max_size) {
     queue->size = 0;
     queue->head = NULL;
     queue->tail = NULL;
+    queue->mutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+    pthread_mutex_init(queue->mutex, NULL);
 }
 
 struct request_queue* get_new_empty_queue(int max_size) {
@@ -70,7 +73,7 @@ struct request_queue* get_new_empty_queue(int max_size) {
     return queue;
 }
 
-bool enqueue(struct request_queue* queue, struct request* req) {
+bool __enqueue(struct request_queue* queue, struct request* req) {
     struct request_queue_node* node = get_new_request_queue_node(req, NULL, queue->head);
     if (is_queue_empty(queue)) {
         queue->head = node;
@@ -87,7 +90,14 @@ bool enqueue(struct request_queue* queue, struct request* req) {
     }
 }
 
-struct request* dequeue(struct request_queue* queue) {
+bool enqueue(struct request_queue* queue, struct request* req) {
+    pthread_mutex_lock(queue->mutex);
+    bool response = __enqueue(queue, req);
+    pthread_mutex_unlock(queue->mutex);
+    return response;
+}
+
+struct request* __dequeue(struct request_queue* queue) {
     if (is_queue_empty(queue)) {
         return NULL;
     } else if (queue->size == 1) {
@@ -109,6 +119,13 @@ struct request* dequeue(struct request_queue* queue) {
     }
 }
 
+struct request* dequeue(struct request_queue* queue) {
+    pthread_mutex_lock(queue->mutex);
+    struct request* response = __dequeue(queue);
+    pthread_mutex_unlock(queue->mutex);
+    return response;
+}
+
 struct request* peek_queue(struct request_queue* queue) {
     if (is_queue_empty(queue)) {
         return NULL;
@@ -123,6 +140,8 @@ void free_queue(struct request_queue* queue) {
         free_request_queue_node(node);
         node = node->next;
     }
+    pthread_mutex_destroy(queue->mutex);
+    free(queue->mutex);
     free(queue);
 }
 

@@ -1,7 +1,8 @@
-#include <stdbool.h>
-
 #ifndef CS303_DS_H
 #define CS303_DS_H
+
+#include <pthread.h>
+#include <stdbool.h>
 
 struct request {
     char* dll_name;
@@ -21,6 +22,7 @@ struct request_queue {
     int size;
     struct request_queue_node* head;
     struct request_queue_node* tail;
+    pthread_mutex_t* mutex;
 };
 
 void init_request(struct request* req, char* dll_name, char* func_name, int num_args, char** func_args);
