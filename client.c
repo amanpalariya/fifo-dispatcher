@@ -24,7 +24,6 @@ int connect_to_port_number(int port_number) {
     bcopy((char*)server->h_addr_list[0], (char*)&server_addr.sin_addr.s_addr, server->h_length);
     server_addr.sin_port = htons(port_number);
     if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
-        // TODO: Error in connecting
         return -1;
     }
     return socket_fd;
@@ -37,7 +36,7 @@ void send_request(int port_number, struct request* req) {
     }
     int socket_fd = connect_to_port_number(port_number);
     if (socket_fd < 0) {
-        log_error("Could not connect to the server at port %4d", port_number);
+        log_error("Could not connect to the server at port %d", port_number);
         return;
     }
     FILE* socket_stream = fdopen(socket_fd, "w");
