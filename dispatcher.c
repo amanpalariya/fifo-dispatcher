@@ -61,7 +61,9 @@ void start_dispatching(struct request_queue* queue) {
         is_thread_available[i] = true;
     }
     while (true) {
-        if (queue->size == 0 || (get_current_memory_usage_in_kb() - base_memory_usage_in_kb) >= MEMORY_LIMIT_IN_KB || (get_current_number_of_files() - base_files_usage) >= FILES_LIMIT) continue;
+        if (queue->size == 0 ||
+            (get_current_memory_usage_in_kb() - base_memory_usage_in_kb) >= MEMORY_LIMIT_IN_KB ||
+            (get_current_number_of_files() - base_files_usage) >= FILES_LIMIT) continue;
         for (int i = 0; i < THREAD_LIMIT; i++) {
             if (is_thread_about_to_finish[i]) {
                 pthread_join(thread_id[i], NULL);
