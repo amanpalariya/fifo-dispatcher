@@ -144,27 +144,3 @@ void free_queue(struct request_queue* queue) {
     free(queue->mutex);
     free(queue);
 }
-
-void print_queue(struct request_queue* q) {
-    struct request_queue_node* node = q->head;
-    printf("[%d/%d] ", q->size, q->max_size);
-    while (node != NULL) {
-        printf("%s <-> ", node->req->dll_name);
-        node = node->next;
-    }
-    printf("NULL\n");
-}
-
-void print_request(struct request* req) {
-    printf("{\n");
-    printf("\tdll_name: \"%s\",\n", req->dll_name);
-    printf("\tfunc_name: \"%s\",\n", req->func_name);
-    printf("\tfunc_args: ");
-    printf("[");
-    if (req->num_args > 0) printf("\"%s\"", req->func_args[0]);
-    for (int i = 1; i < req->num_args; i++) {
-        printf(" , \"%s\"", req->func_args[i]);
-    }
-    printf("]\n");
-    printf("}\n");
-}

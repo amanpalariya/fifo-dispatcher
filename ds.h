@@ -49,8 +49,4 @@ struct request* peek_queue(struct request_queue* queue);
 
 void free_queue(struct request_queue* queue);
 
-void print_queue(struct request_queue* q);
-
-void print_request(struct request* req);
-
 #endif

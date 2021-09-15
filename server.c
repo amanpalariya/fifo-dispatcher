@@ -33,7 +33,6 @@ void* handle_client(void* args) {
     FILE* client_stream = fdopen(client_fd, "r");
     struct request* req = read_request_from_stream(client_stream);
     log_info("(fd: %d) Request received", client_fd);
-    print_request(req);
     client_stream = fdopen(client_fd, "w");
     if (req == NULL) {
         write_acknowledgement_to_stream(client_stream, REQUEST_RECEIVE_ACKNOWLEDGEMENT_FAILURE_MALFORMED_REQUEST);
