@@ -49,22 +49,25 @@ void* run_dll_function(void* args) {
     pthread_exit(NULL);
 }
 
-void start_dispatching(struct request_queue* queue) {
+void start_dispatching(struct request_queue* queue, int thread_limit, int memory_limit_in_kb, int files_limit) {
+    if (thread_limit < 0 || memory_limit_in_kb < 0 || files_limit < 0) {
+        log_error("Limits on resources should be positive, got %d on number of threads, %d KB on memory, %d on number of files", thread_limit, memory_limit_in_kb, files_limit);
+    }
     int prev_size = 0;
     int base_memory_usage_in_kb = get_current_memory_usage_in_kb();
     int base_files_usage = get_current_number_of_files();
-    pthread_t thread_id[THREAD_LIMIT];
-    bool is_thread_available[THREAD_LIMIT];
-    bool is_thread_about_to_finish[THREAD_LIMIT];
-    for (int i = 0; i < THREAD_LIMIT; i++) {
+    pthread_t thread_id[thread_limit];
+    bool is_thread_available[thread_limit];
+    bool is_thread_about_to_finish[thread_limit];
+    for (int i = 0; i < thread_limit; i++) {
         is_thread_about_to_finish[i] = false;
         is_thread_available[i] = true;
     }
     while (true) {
         if (queue->size == 0 ||
-            (get_current_memory_usage_in_kb() - base_memory_usage_in_kb) >= MEMORY_LIMIT_IN_KB ||
-            (get_current_number_of_files() - base_files_usage) >= FILES_LIMIT) continue;
-        for (int i = 0; i < THREAD_LIMIT; i++) {
+            (get_current_memory_usage_in_kb() - base_memory_usage_in_kb) >= memory_limit_in_kb ||
+            (get_current_number_of_files() - base_files_usage) >= files_limit) continue;
+        for (int i = 0; i < thread_limit; i++) {
             if (is_thread_about_to_finish[i]) {
                 pthread_join(thread_id[i], NULL);
                 is_thread_about_to_finish[i] = false;
