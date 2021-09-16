@@ -3,6 +3,6 @@
 
 #include "ds.h"
 
-void handle_request(struct request* req);
+bool handle_request(struct request* req);
 
 #endif
