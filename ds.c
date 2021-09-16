@@ -23,9 +23,6 @@ struct request* get_new_request(char* dll_name, char* func_name, int num_args, c
 }
 
 void free_request(struct request* req) {
-    free(req->dll_name);
-    free(req->func_name);
-    free(req->func_args);
     free(req);
 }
 
