@@ -57,7 +57,7 @@ void test_queue() {
     free_request(front);
 
     free_request(dequeue(queue));
-    test_log("(2/2) dequeque()", queue->size == 0 && dequeue(queue) == NULL);
+    test_log("(2/2) dequeue()", queue->size == 0 && dequeue(queue) == NULL);
 
     free_queue(queue);
 }
