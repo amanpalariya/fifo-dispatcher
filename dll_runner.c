@@ -25,7 +25,7 @@ bool handle_request(struct request* req) {
             dlclose(handle);
             return true;
         } else {
-            log_error("DLL runner supports only (double)(double) functions, got %d args while executing \"%s\" from \"%s\"", req->num_args, req->func_name, req->dll_name);
+            log_error("DLL runner supports only double (*)(double) functions, got %d args while executing \"%s\" from \"%s\"", req->num_args, req->func_name, req->dll_name);
         }
     }
 
